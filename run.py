@@ -28,7 +28,7 @@ parser.add_argument('--scaling_required', type=bool, default=False, help='Whethe
 parser.add_argument('--save', type=str, default='./save/', help='save path')
 parser.add_argument('--expid', type=str, default='', help='experiment id')
 parser.add_argument('--runs', type=int, default=1, help='number of runs')
-parser.add_argument('--save_result',type=str,default='',help='path to save forecasting results')
+parser.add_argument('--save_results',type=str,default='',help='path to save forecasting results')
 
 # For evaluation of early detection ability
 parser.add_argument('--delays',type=str,default=[0,6,30,60,120,180,360],help='Early detection delay constraint values') # for wadi/swat every 6 timestamp is a minute
@@ -143,10 +143,9 @@ def main(runid):
                 train_loss.append(metrics[0])
                 train_mape.append(metrics[1])
                 train_rmse.append(metrics[2])
-            if iter % args.print_every == 0 :
+            if iter % args.print_every == 0:
                 log = 'Iter: {:03d}, Train Loss: {:.4f}, Train MAPE: {:.4f}, Train RMSE: {:.4f}'
                 print(log.format(iter, train_loss[-1], train_mape[-1], train_rmse[-1]),flush=True)
-
         t2 = time.time()
         train_time.append(t2-t1)
 
@@ -205,7 +204,6 @@ def main(runid):
             preds,_ = engine.pred(testx)
             preds = preds.transpose(1,3)
         outputs.append(preds)
-
     yhat = torch.cat(outputs,dim=0)
     yhat = yhat[:realy.size(0),...]
 
@@ -252,8 +250,7 @@ def main(runid):
             preds, adp = engine.pred(testx)
             preds = preds.transpose(1, 3)
         outputs.append(preds)
-    adp = adp.cpu().detach().numpy() # save a copy of learned pairwise correlation graph
-
+    adp = adp.cpu().detach().numpy()
     yhat = torch.cat(outputs, dim=0)  # WADI: (17408, 1, nodes, 1)
     yhat = yhat[:realy.size(0), ...]  # WADI: (17275, 1, nodes, 1)
 
@@ -265,7 +262,7 @@ def main(runid):
     test_pred = pred.squeeze().cpu().detach().numpy()
     test_label = realy.squeeze().cpu().detach().numpy()
 
-    if args.save_result:
+    if args.save_results:
         # train
         np.save(args.save_results + 'train_pred_' + str(runid) + '.npy', train_pred)
         np.save(args.save_results + 'train_label_' + str(runid) + '.npy', train_label)
@@ -276,8 +273,23 @@ def main(runid):
         np.save(args.save_results+'test_pred_'+str(runid) +'.npy',test_pred)
         np.save(args.save_results+'test_label_'+str(runid) +'.npy',test_label)
         # ADP - MTCL layer uni-directed graph
-        np.save(args.save_results + "ADP_" + str(runid), adp)
+        np.save(args.save_results + "ADP_" + str(runid) + str(args.expid), adp)
 
+    # After adp is defined in run.py, add this code to save the adjacency matrix
+    k = args.subgraph_size  # Use the same k as in training
+
+    # Create a file to save the top-k connections for each node
+    with open(args.save + f"topk_adjacency_{str(args.expid)}{str(runid)}.txt", 'w') as f:
+        for i in range(adp.shape[0]):
+            # Get indices of top-k values for this node
+            row = adp[i, :]
+            top_indices = np.argsort(row)[-k:].tolist()
+
+            # Sort the indices
+            top_indices.sort()
+
+            # Write the node index followed by its connected nodes
+            f.write(f"{i} " + " ".join(map(str, top_indices)) + "\n")
 
     ############### Anomaly Detection and Diagnosis ###############
     anomaly_detector = anomaly_dd(train_label,val_label,test_label,train_pred,val_pred,test_pred,
@@ -286,7 +298,7 @@ def main(runid):
     indicator, prediction = anomaly_detector.scorer(args.pca_compo)
     # Evaluate results
     with open(args.data+'/anomaly_labels.txt','r') as f:
-        labels = [int(i) for i in f.read().split(',')]
+        labels = [int(float(i)) for i in f.read().split(',')]
 
     pointwise = pointwise_evaluation(labels,prediction,indicator)
     early = early_detection_evaluation(labels,indicator,args.delays)

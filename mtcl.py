@@ -124,6 +124,7 @@ class graph_directed(nn.Module):
             self.lin1 = nn.Linear(xd, dim)
             self.lin2 = nn.Linear(xd, dim)
         else:
+            #export emb1 and emb2
             self.emb1 = nn.Embedding(nnodes, dim)
             self.emb2 = nn.Embedding(nnodes, dim)
             self.lin1 = nn.Linear(dim,dim)
