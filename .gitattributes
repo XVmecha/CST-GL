@@ -6,3 +6,4 @@ data/wadi/test.npz filter=lfs diff=lfs merge=lfs -text
 data/wadi/train.npz filter=lfs diff=lfs merge=lfs -text
 data/wadi/val.npz filter=lfs diff=lfs merge=lfs -text
 data/wadi/anomaly_labels.txt filter=lfs diff=lfs merge=lfs -text
+*.npz filter=lfs diff=lfs merge=lfs -text
