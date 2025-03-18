@@ -1,0 +1,8 @@
+data/swat/train.npz filter=lfs diff=lfs merge=lfs -text
+data/swat/val.npz filter=lfs diff=lfs merge=lfs -text
+data/swat/anomaly_labels.txt filter=lfs diff=lfs merge=lfs -text
+data/swat/test.npz filter=lfs diff=lfs merge=lfs -text
+data/wadi/test.npz filter=lfs diff=lfs merge=lfs -text
+data/wadi/train.npz filter=lfs diff=lfs merge=lfs -text
+data/wadi/val.npz filter=lfs diff=lfs merge=lfs -text
+data/wadi/anomaly_labels.txt filter=lfs diff=lfs merge=lfs -text
