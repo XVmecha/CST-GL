@@ -24,10 +24,6 @@ parser = argparse.ArgumentParser()
 # Data and Pre-processing
 parser.add_argument('--device', type=str, default='cuda:0', help='')
 parser.add_argument('--data', type=str, default='./data/minmax_swat', help='data path')
-parser.add_argument('--scaling_required', type=bool, default=False, help='Whether to scale input for model and inverse scale output from model.')
-parser.add_argument('--save', type=str, default='./save/', help='save path')
-parser.add_argument('--expid', type=str, default='', help='experiment id')
-parser.add_argument('--runs', type=int, default=1, help='number of runs')
 parser.add_argument('--save_results',type=str,default='',help='path to save forecasting results')
 
 # For evaluation of early detection ability
@@ -37,10 +33,6 @@ parser.add_argument('--delays',type=str,default=[0,6,30,60,120,180,360],help='Ea
 parser.add_argument('--batch_size', type=int, default=4, help='batch size')
 parser.add_argument('--learning_rate', type=float, default=3e-4, help='learning rate')
 parser.add_argument('--weight_decay', type=float, default=0.0001, help='weight decay rate')
-parser.add_argument('--clip', type=int, default=10, help='clip')
-parser.add_argument('--step_size1', type=int, default=2500, help='step_size')
-parser.add_argument('--step_size2', type=int, default=100, help='step_size')
-parser.add_argument('--epochs', type=int, default=20, help='')
 parser.add_argument('--print_every', type=int, default=5000, help='')
 parser.add_argument('--dropout', type=float, default=0.1, help='dropout rate')
 
@@ -59,9 +51,6 @@ parser.add_argument('--gcn_true', type=str_to_bool, default=True, help='whether 
 parser.add_argument('--gcn_depth', type=int, default=2, help='graph convolution depth')
 
 parser.add_argument('--dilation_exponential', type=int, default=1, help='dilation exponential')
-parser.add_argument('--conv_channels', type=int, default=16, help='convolution channels')
-parser.add_argument('--residual_channels', type=int, default=16, help='residual channels')
-parser.add_argument('--skip_channels', type=int, default=32, help='skip channels')
 parser.add_argument('--end_channels', type=int, default=64, help='end channels')
 
 parser.add_argument('--layers', type=int, default=2, help='number of layers')
